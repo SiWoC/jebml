@@ -22,6 +22,7 @@ package org.ebml.matroska;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import org.ebml.EBMLReader;
 import org.ebml.Element;
@@ -67,7 +68,7 @@ public class VoidElement extends Element
     buf.put(getType());
     buf.put(encodedSize);
     buf.flip();
-    LOG.trace("Writing out header {}, {}", buf.remaining(), EBMLReader.bytesToHex(buf.array()));
+    LOGGER.log(Level.FINER, "Writing out header [" + buf.remaining() + "], [" + EBMLReader.bytesToHex(buf.array()) + "]");
     writer.write(buf);
     return len;
   }

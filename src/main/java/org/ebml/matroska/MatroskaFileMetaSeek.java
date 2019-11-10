@@ -1,18 +1,18 @@
 package org.ebml.matroska;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ebml.BinaryElement;
 import org.ebml.Element;
 import org.ebml.MasterElement;
 import org.ebml.UnsignedIntegerElement;
 import org.ebml.io.DataWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MatroskaFileMetaSeek
 {
-  private static final Logger LOG = LoggerFactory.getLogger(MatroskaFileMetaSeek.class);
+  private static final Logger LOGGER = Logger.getLogger(MatroskaFileMetaSeek.class.getName());
   private static final long BLOCK_RESERVE_SIZE = 256;
   private final long myPosition;
   private final MasterElement seekHeadElem;
@@ -60,7 +60,7 @@ public class MatroskaFileMetaSeek
     ioDW.seek(myPosition);
     write(ioDW);
     ioDW.seek(pos);
-    LOG.debug("Updated metaseek section.");
+    LOGGER.log(Level.FINE, "Updated metaseek section.");
   }
 
   /**
@@ -72,7 +72,7 @@ public class MatroskaFileMetaSeek
    */
   public void addIndexedElement(final Element element, final long filePosition)
   {
-    LOG.debug("Adding indexed element {} @ {}", element.getElementType().getName(), filePosition - referencePosition);
+	  LOGGER.log(Level.FINE, "Adding indexed element [" + element.getElementType().getName() + "] @ [" + (filePosition - referencePosition) + "]");
     addIndexedElement(element.getType(), filePosition);
   }
 
@@ -86,7 +86,7 @@ public class MatroskaFileMetaSeek
    */
   public void addIndexedElement(final ByteBuffer elementType, final long filePosition)
   {
-    LOG.debug("Adding indexed element @ {}", filePosition - referencePosition);
+	  LOGGER.log(Level.FINE, "Adding indexed element @ {0}", filePosition - referencePosition);
     final MasterElement seekEntryElem = MatroskaDocTypes.Seek.getInstance();
     final BinaryElement seekEntryIdElem = MatroskaDocTypes.SeekID.getInstance();
     seekEntryIdElem.setData(elementType);

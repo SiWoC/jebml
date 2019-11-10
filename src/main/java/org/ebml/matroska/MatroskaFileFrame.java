@@ -21,9 +21,8 @@ package org.ebml.matroska;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Matroska Frame, holds a Matroska frame timecode, duration, and data. <br>
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MatroskaFileFrame
 {
-  private static final Logger LOG = LoggerFactory.getLogger(MatroskaFileFrame.class);
+  private static final Logger LOGGER = Logger.getLogger(MatroskaFileFrame.class.getName());
 
   private int trackNo;
   /**
@@ -180,7 +179,7 @@ public class MatroskaFileFrame
    */
   public void setData(final ByteBuffer data)
   {
-    LOG.trace("Setting data with size {}", data.remaining());
+    LOGGER.log(Level.FINE, "Setting data with size [{0}]", data.remaining());
     this.data = data.duplicate();
   }
 

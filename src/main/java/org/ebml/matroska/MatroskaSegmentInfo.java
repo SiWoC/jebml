@@ -1,6 +1,8 @@
 package org.ebml.matroska;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ebml.DateElement;
 import org.ebml.FloatElement;
@@ -8,12 +10,10 @@ import org.ebml.MasterElement;
 import org.ebml.StringElement;
 import org.ebml.UnsignedIntegerElement;
 import org.ebml.io.DataWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MatroskaSegmentInfo
 {
-  private static final Logger LOG = LoggerFactory.getLogger(MatroskaSegmentInfo.class);
+  private static final Logger LOGGER = Logger.getLogger(MatroskaSegmentInfo.class.getName());
   private static final long BLOCK_SIZE = 128;
 
   private long timecodeScale = 1000000;
@@ -64,7 +64,7 @@ public class MatroskaSegmentInfo
 
   public void update(final DataWriter ioDW)
   {
-    LOG.debug("Updating segment info header");
+	LOGGER.log(Level.FINE, "Updating segment info header");
     final long startingPos = ioDW.getFilePointer();
     ioDW.seek(myPosition);
     writeElement(ioDW);

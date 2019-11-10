@@ -19,19 +19,20 @@
  */
 package org.ebml.matroska;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.ebml.MasterElement;
 import org.ebml.StringElement;
 import org.ebml.UnsignedIntegerElement;
 import org.ebml.io.DataWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Primary API entrypoint for writing Matroska files.
  */
 public class MatroskaFileWriter
 {
-  private static final Logger LOG = LoggerFactory.getLogger(MatroskaFileWriter.class);
+  private static final Logger LOGGER = Logger.getLogger(MatroskaFileWriter.class.getName());
 
   protected DataWriter ioDW;
 
@@ -192,7 +193,7 @@ public class MatroskaFileWriter
   {
     final long clusterPos = ioDW.getFilePointer();
     cueData.addCue(clusterPos, cluster.getClusterTimecode(), cluster.getTracks());
-    LOG.debug("Cluster flushing, timecode {}", cluster.getClusterTimecode());
+    LOGGER.log(Level.FINE, "Cluster flushing, timecode {0}", cluster.getClusterTimecode());
     cluster.flush(ioDW);
   }
 

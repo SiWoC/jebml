@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ebml.DateElement;
 import org.ebml.EBMLReader;
@@ -34,8 +36,6 @@ import org.ebml.SignedIntegerElement;
 import org.ebml.StringElement;
 import org.ebml.UnsignedIntegerElement;
 import org.ebml.io.DataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MatroskaFile
 {
@@ -43,7 +43,7 @@ public class MatroskaFile
    * Number of Clusters to search before assuming that a track has ended
    */
   public static final int CLUSTER_TRACK_SEARCH_COUNT = 4;
-  protected static final Logger LOG = LoggerFactory.getLogger(MatroskaFile.class);
+  protected static final Logger LOGGER = Logger.getLogger(MatroskaFile.class.getName());
 
   static
   {
@@ -122,10 +122,10 @@ public class MatroskaFile
     if (level0.isType(MatroskaDocTypes.Segment.getType()))
     {
       level1 = ((MasterElement) level0).readNextChild(reader);
-      LOG.debug("Got segment element");
+      LOGGER.log(Level.FINE, "Got segment element");
       while (level1 != null)
       {
-        LOG.debug("Got {} element in segment", level1.getElementType().getName());
+        LOGGER.log(Level.FINE, "Got [" + level1.getElementType().getName() + "] element in segment");
         if (level1.isType(MatroskaDocTypes.Info.getType()))
         {
           parseSegmentInfo(level1, level2);

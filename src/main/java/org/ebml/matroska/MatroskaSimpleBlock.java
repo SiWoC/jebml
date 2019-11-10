@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ebml.BinaryElement;
 import org.ebml.EBMLReader;
@@ -11,12 +13,10 @@ import org.ebml.Element;
 import org.ebml.MasterElement;
 import org.ebml.UnsignedIntegerElement;
 import org.ebml.io.DataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class MatroskaSimpleBlock
 {
-  private static final Logger LOG = LoggerFactory.getLogger(MatroskaSimpleBlock.class);
+  private static final Logger LOGGER = Logger.getLogger(MatroskaSimpleBlock.class.getName());
 
   // Note: this max size based on libmatroska src
   private static final int MAX_LACE_SIZE = 6 * 0xFF;
@@ -113,7 +113,7 @@ class MatroskaSimpleBlock
         bs.set(5);
         break;
       case NONE:
-        LOG.trace("Lace mode none!");
+    	LOGGER.log(Level.FINER, "Lace mode none!");
         break;
       default:
         break;
@@ -126,7 +126,7 @@ class MatroskaSimpleBlock
     }
     for (final MatroskaFileFrame frame: frames)
     {
-      LOG.trace("Writing frame {}", frame.getData().remaining());
+      LOGGER.log(Level.FINE, "Writing frame {0}", frame.getData().remaining());
       buf.put(frame.getData());
     }
     buf.flip();
@@ -144,13 +144,13 @@ class MatroskaSimpleBlock
 
   private ByteBuffer fixedEncodeLaceSizes()
   {
-    LOG.trace("Encoding fixed lace sizes");
+	LOGGER.log(Level.FINER, "Encoding fixed lace sizes");
     return ByteBuffer.allocate(1).put((byte) (frames.size() - 1));
   }
 
   private ByteBuffer xiphEncodeLaceSizes()
   {
-    LOG.trace("Encoding xiph lace sizes");
+	LOGGER.log(Level.FINER, "Encoding xiph lace sizes");
     final ByteBuffer buf = ByteBuffer.allocate(30);
     buf.put((byte) (frames.size() - 1));
     for (int i = 0; i < frames.size() - 1; ++i)
@@ -168,7 +168,7 @@ class MatroskaSimpleBlock
 
   private ByteBuffer ebmlEncodeLaceSizes()
   {
-    LOG.trace("Encoding ebml lace sizes");
+	LOGGER.log(Level.FINER, "Encoding ebml lace sizes");
     final ByteBuffer buf = ByteBuffer.allocate(30);
     buf.put((byte) (frames.size() - 1));
     for (int i = 0; i < frames.size() - 1; ++i)
@@ -222,7 +222,7 @@ class MatroskaSimpleBlock
 
   public boolean addFrame(final MatroskaFileFrame frame)
   {
-    LOG.trace("Adding frame {}", frame.getData().remaining());
+	LOGGER.log(Level.FINER, "Adding frame {0}", frame.getData().remaining());
     setTimecode(frame.getTimecode());
     setTrackNumber(frame.getTrackNo());
     totalSize += frame.getData().remaining();

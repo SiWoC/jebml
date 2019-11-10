@@ -27,11 +27,11 @@ package org.ebml;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ebml.io.DataSource;
 import org.ebml.io.DataWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Defines the basic EBML element. Subclasses may provide child element access.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Element
 {
-  protected static final Logger LOG = LoggerFactory.getLogger(Element.class);
+  protected static final Logger LOGGER = Logger.getLogger(Element.class.getName());
   private static int minSizeLength = 0;
 
   protected Element parent;
@@ -73,7 +73,7 @@ public class Element
     data.flip();
     dataRead = true;
 
-    LOG.trace("Read {} bytes from {}", size, typeInfo.getName());
+    LOGGER.log(Level.FINER, "Read [" + size + "] bytes from [" + typeInfo.getName() + "]");
   }
 
   /**
@@ -91,7 +91,7 @@ public class Element
 
   public long writeElement(final DataWriter writer)
   {
-    LOG.trace("Writing element {} with size {}", typeInfo.getName(), getTotalSize());
+    LOGGER.log(Level.FINER, "Writing element [" + typeInfo.getName() + "] with size [" + getTotalSize() + "]");
     return writeHeaderData(writer) + writeData(writer);
   }
 
@@ -113,7 +113,7 @@ public class Element
     buf.put(getType());
     buf.put(encodedSize);
     buf.flip();
-    LOG.trace("Writing out header {}, {}", buf.remaining(), EBMLReader.bytesToHex(buf.array()));
+    LOGGER.log(Level.FINER, "Writing out header [" + buf.remaining() + "], [" + EBMLReader.bytesToHex(buf.array()) + "]");
     writer.write(buf);
     return len;
   }
@@ -130,7 +130,7 @@ public class Element
     data.mark();
     try
     {
-      LOG.trace("Writing data {} bytes of {}", data.remaining(), EBMLReader.bytesToHex(data.array()));
+      LOGGER.log(Level.FINER, "Writing data [" + data.remaining() + "] bytes of [" + EBMLReader.bytesToHex(data.array()) + "]");
       return writer.write(data);
     }
     finally
@@ -317,7 +317,7 @@ public class Element
     }
     // The first size bits should be clear, otherwise we have an error in the size determination.
     ret[0] |= 0x80 >> (len - 1);
-    LOG.trace("Ebml coded size {} for {}", EBMLReader.bytesToHex(ret), size);
+    LOGGER.log(Level.FINER, "Ebml coded size [" + EBMLReader.bytesToHex(ret) + "] for [" + size + "]");
     return ret;
   }
 

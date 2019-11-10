@@ -20,6 +20,7 @@
 package org.ebml;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 
 /*
  * UnsignedIntegerElement.java
@@ -47,7 +48,7 @@ public class UnsignedIntegerElement extends BinaryElement
   public void setValue(final long value)
   {
     final ByteBuffer buf = ByteBuffer.wrap(packIntUnsigned(value));
-    LOG.trace("Setting value {} to {}", value, EBMLReader.bytesToHex(buf.array()));
+    LOGGER.log(Level.FINER, "Setting value [" + value + "] to [" + EBMLReader.bytesToHex(buf.array()) + "]");
     setData(buf);
   }
 
