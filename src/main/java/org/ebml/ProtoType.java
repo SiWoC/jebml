@@ -2,14 +2,14 @@ package org.ebml;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.ebml.matroska.MatroskaDocTypes;
 
 public class ProtoType<T extends Element>
 {
-  private static final Logger LOGGER = Logger.getLogger(ProtoType.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(ProtoType.class);
   private static final HashMap<Long, ProtoType<? extends Element>> CLASS_MAP = new HashMap<>();
   Class<T> clazz;
   private final ByteBuffer type;
@@ -25,12 +25,12 @@ public class ProtoType<T extends Element>
     this.level = level;
     final long codename = EBMLReader.parseEBMLCode(this.type);
     CLASS_MAP.put(codename, this);
-    LOGGER.log(Level.FINER, "Associating [" + name + "] with [" + codename + "]");
+    LOG.trace("Associating {} with {}", name, codename);
   }
 
   public T getInstance()
   {
-    LOGGER.log(Level.FINER, "Instantiating [" + name + "]");
+    LOG.trace("Instantiating {}", name);
     try
     {
       final T elem = clazz.newInstance();
@@ -40,7 +40,7 @@ public class ProtoType<T extends Element>
     }
     catch (InstantiationException | IllegalAccessException e)
     {
-      LOGGER.log(Level.SEVERE, "Failed to instantiate: this should never happen!", e);
+      LOG.error("Failed to instantiate: this should never happen!", e);
       throw new RuntimeException(e);
     }
   }
@@ -50,10 +50,10 @@ public class ProtoType<T extends Element>
     final long codename = EBMLReader.parseEBMLCode(type);
     final ProtoType<? extends Element> eType = CLASS_MAP.get(Long.valueOf(codename));
     if (eType == null) {
-        LOGGER.log(Level.WARNING, "Unknown codename [" + codename + "]=[" + EBMLReader.bytesToHex(type.array()) + "], returning [Void]");
+        LOG.warn("Unknown codename [" + codename + "]=[" + EBMLReader.bytesToHex(type.array()) + "], returning [Void]");
         return MatroskaDocTypes.Void.getInstance();
     }
-    LOGGER.log(Level.FINER, "Got codename [" + codename + "], for element type [" + eType.name + "]");
+    LOG.trace("Got codename {}, for element type {}", codename, eType.name);
     return eType.getInstance();
   }
 

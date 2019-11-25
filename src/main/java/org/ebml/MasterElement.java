@@ -20,7 +20,6 @@
 package org.ebml;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 import org.ebml.io.DataSource;
 import org.ebml.io.DataWriter;
@@ -44,14 +43,14 @@ public class MasterElement extends Element
   {
     if (usedSize >= this.getSize())
     {
-      LOGGER.log(Level.FINER, "Can't read any more children");
+      LOG.trace("Can't read any more children");
       return null;
     }
 
     final Element elem = reader.readNextElement();
     if (elem == null)
     {
-      LOGGER.log(Level.FINE, "Reader returned null");
+      LOG.debug("Reader returned null");
       return null;
     }
 
@@ -59,7 +58,7 @@ public class MasterElement extends Element
 
     usedSize += elem.getTotalSize();
 
-    LOGGER.log(Level.FINER, "Read element [" + elem.typeInfo.getName() + "] of size [" + elem.getTotalSize() + "]: [" + (size - usedSize) + "] remaining");
+    LOG.trace("Read element {} of size {}: {} remaining", elem.typeInfo.getName(), elem.getTotalSize(), size - usedSize);
     return elem;
   }
 

@@ -26,19 +26,19 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ebml.MasterElement;
 import org.ebml.UnsignedIntegerElement;
 import org.ebml.io.DataWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A cluster of frames in a file. Used internally during muxing.
  */
 class MatroskaCluster
 {
-  private static final Logger LOGGER = Logger.getLogger(MatroskaCluster.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(MatroskaCluster.class);
   private final Queue<MatroskaFileFrame> frames = new ConcurrentLinkedQueue<>();
   private final Set<Integer> tracks = new HashSet<>();
   private final List<Long> sliencedTracks = new ArrayList<>();
@@ -106,11 +106,11 @@ class MatroskaCluster
       boolean forceNew = true;
       long lastTimecode = 0;
       int lastTrackNumber = 0;
-      LOGGER.log(Level.FINER, "Timecode for cluster set to [" + clusterTimecode + "]");
+      LOG.trace("Timecode for cluster set to {}", clusterTimecode);
       for (final MatroskaFileFrame frame: frames)
       {
         frame.setTimecode(frame.getTimecode() - clusterTimecode);
-        LOGGER.log(Level.FINER, "Timecode for frame set to [" + frame.getTimecode() + "]");
+        LOG.trace("Timecode for frame set to {}", frame.getTimecode());
         if (forceNew || lastTimecode != frame.getTimecode() || lastTrackNumber != frame.getTrackNo())
         {
           if (block != null)

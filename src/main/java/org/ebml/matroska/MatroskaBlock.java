@@ -21,16 +21,15 @@ package org.ebml.matroska;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ebml.EBMLReader;
 import org.ebml.Element;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MatroskaBlock
 {
-  private static final Logger LOGGER = Logger.getLogger(MatroskaBlock.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(MatroskaBlock.class);
 
   protected int[] sizes = null;
   protected int headerSize = 0;
@@ -41,7 +40,7 @@ public class MatroskaBlock
 
   public MatroskaBlock(final ByteBuffer data)
   {
-    LOGGER.log(Level.FINER, "Block created with data [" + data.limit() + "], [" + data.position() + "]");
+    LOG.trace("Block created with data {}, {}", data.limit(), data.position());
     this.data = data;
   }
 
@@ -57,7 +56,7 @@ public class MatroskaBlock
     headerSize += index;
 
     blockTimecode = data.getShort();
-    LOGGER.log(Level.FINER, "Block belongs to track [" + trackNo + "] @ [" + blockTimecode + "]");
+    LOG.trace("Block belongs to track {} @ {}", trackNo, blockTimecode);
 
     final byte flagsByte = data.get();
     final int keyFlag = flagsByte & 0x80;
@@ -81,17 +80,17 @@ public class MatroskaBlock
       headerSize += 1;
       if (laceFlag == 0x02)
       { // Xiph Lacing
-        LOGGER.log(Level.FINER, "Reading xiph lace sizes");
+        LOG.trace("Reading xiph lace sizes");
         sizes = readXiphLaceSizes(index, laceCount);
       }
       else if (laceFlag == 0x06)
       { // EBML Lacing
-        LOGGER.log(Level.FINER, "Reading ebml lace sizes");
+        LOG.trace("Reading ebml lace sizes");
         sizes = readEBMLLaceSizes(index, laceCount);
       }
       else if (laceFlag == 0x04)
       { // Fixed Size Lacing
-        LOGGER.log(Level.FINER, "Fixed lace sizes");
+        LOG.trace("Fixed lace sizes");
         sizes = new int[laceCount + 1];
         sizes[0] = data.remaining() / (laceCount + 1);
         for (int s = 0; s < laceCount; s++)
@@ -103,7 +102,7 @@ public class MatroskaBlock
       {
         throw new RuntimeException("Unsupported lacing type flag.");
       }
-      LOGGER.log(Level.FINER, "Lace sizes: [" + Arrays.toString(sizes) + "]");
+      LOG.trace("Lace sizes: {}", Arrays.toString(sizes));
     }
     // data = new byte[(int)(this.getSize() - HeaderSize)];
     // source.read(data, 0, data.length);

@@ -21,8 +21,6 @@ package org.ebml.matroska;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ebml.BinaryElement;
 import org.ebml.EBMLReader;
@@ -32,6 +30,8 @@ import org.ebml.MasterElement;
 import org.ebml.StringElement;
 import org.ebml.UnsignedIntegerElement;
 import org.ebml.io.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Matroska Track Class </p>
@@ -46,7 +46,7 @@ import org.ebml.io.DataSource;
  */
 public class MatroskaFileTrack
 {
-  private static final Logger LOGGER = Logger.getLogger(MatroskaFileTrack.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(MatroskaFileTrack.class);
 
   private int trackNo = 1;
   private long trackUID = 1337;
@@ -83,7 +83,7 @@ public class MatroskaFileTrack
 
     public static TrackType fromOrdinal(final long l)
     {
-      LOGGER.log(Level.FINE, "Track type from ordinal: {0}", l);
+      LOG.debug("Track type from ordinal: {}", l);
       switch ((int) l)
       {
         case 1:
@@ -154,7 +154,6 @@ public class MatroskaFileTrack
     {
       this.displayHeight = displayHeight;
     }
-
   }
 
   private MatroskaVideoTrack video = null;
@@ -277,7 +276,7 @@ public class MatroskaFileTrack
     Element level3 = ((MasterElement) level2).readNextChild(reader);
     Element level4 = null;
     final MatroskaFileTrack track = new MatroskaFileTrack();
-    LOGGER.log(Level.FINE, "Reading track from doc!");
+    LOG.debug("Reading track from doc!");
     while (level3 != null)
     {
       if (level3.isType(MatroskaDocTypes.TrackNumber.getType()))
@@ -399,7 +398,7 @@ public class MatroskaFileTrack
       level3.skipData(ioDS);
       level3 = ((MasterElement) level2).readNextChild(reader);
     }
-    LOGGER.log(Level.FINE, "Read track from doc!");
+    LOG.debug("Read track from doc!");
     return track;
   }
 
@@ -415,7 +414,7 @@ public class MatroskaFileTrack
 
     final UnsignedIntegerElement trackTypeElem = MatroskaDocTypes.TrackType.getInstance();
     trackTypeElem.setValue(this.getTrackType().type);
-    LOGGER.log(Level.INFO, "Track type set to {0}", getTrackType().type);
+    LOG.info("Track type set to {}", getTrackType().type);
 
     final UnsignedIntegerElement trackFlagEnabledElem = MatroskaDocTypes.FlagEnabled.getInstance();
     trackFlagEnabledElem.setValue(this.isFlagEnabled() ? 1 : 0);

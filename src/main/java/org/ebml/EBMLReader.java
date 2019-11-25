@@ -20,10 +20,10 @@
 package org.ebml;
 
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ebml.io.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * EBMLReader.java
@@ -68,7 +68,7 @@ import org.ebml.io.DataSource;
  */
 public class EBMLReader
 {
-  private static final Logger LOGGER = Logger.getLogger(EBMLReader.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(EBMLReader.class);
   private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
   protected DataSource source;
@@ -115,21 +115,21 @@ public class EBMLReader
     {
       return null;
     }
-    LOGGER.log(Level.FINER, "Read element [" + elem.getElementType().getName() + "]");
+    LOG.trace("Read element {}", elem.getElementType().getName());
 
     // Read the size.
     final long elementSize = readEBMLCode(source);
     if (elementSize == 0)
     {
       // Zero sized element is valid
-    	LOGGER.log(Level.WARNING, "Invalid element size for [" + elem.typeInfo.getName() + "]");
+      LOG.error("Invalid element size for {}", elem.typeInfo.getName());
     }
     final long end = source.getFilePointer();
 
     // Set it's size
     elem.setSize(elementSize);
     elem.setHeadersSize(end - position);
-    LOGGER.log(Level.FINER, "Read element [" + elem.typeInfo.getName() + "] with size [" + elem.getTotalSize() + "]");
+    LOG.trace("Read element {} with size {}", elem.typeInfo.getName(), elem.getTotalSize());
 
     // Setup a buffer for it's data
     // byte[] elementData = new byte[(int)elementSize];
@@ -153,7 +153,7 @@ public class EBMLReader
 
     if (numBytes == 0)
     {
-    	LOGGER.log(Level.SEVERE, "Failed to read ebml code size from [" + firstByte + "]");
+      LOG.error("Failed to read ebml code size from {}", firstByte);
       // Invalid size
       return null;
     }
@@ -205,7 +205,7 @@ public class EBMLReader
     // Begin loop with byte set to newly read byte.
     final byte firstByte = source.readByte();
     final int numBytes = readEBMLCodeSize(firstByte);
-    LOGGER.log(Level.FINER, "Reading ebml code of [" + numBytes + "] bytes");
+    LOG.trace("Reading ebml code of {} bytes", numBytes);
     if (numBytes == 0)
     {
       // Invalid size
@@ -249,7 +249,7 @@ public class EBMLReader
       size = size | (n << (8 * i));
     }
     data.reset();
-    LOGGER.log(Level.FINER, "Parsed ebml code [" + bytesToHex(data.array()) + "] as [" + size + "]");
+    LOG.trace("Parsed ebml code {} as {}", bytesToHex(data.array()), size);
     return size;
   }
 
@@ -414,7 +414,7 @@ public class EBMLReader
 
     if (numBytes == 0)
     {
-    	LOGGER.log(Level.SEVERE, "Failed to read ebml code size from [" + firstByte + "]");
+      LOG.error("Failed to read ebml code size from {}", firstByte);
       // Invalid size
       return null;
     }
